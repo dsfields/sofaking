@@ -1,0 +1,33 @@
+{
+  "name": "sofaking",
+  "longName": "Bucket configuration and connection management for Couchbase.",
+  "version": "1.0.0",
+
+  "dependencies": {
+    "couchbase-promises": "^2.1.1",
+    "joi": "~8.0.5",
+    "rc": "~1.1.6"
+  },
+  "devDependencies": {
+    "chai": "~3.5.0",
+    "istanbul": "~0.4.2",
+    "mocha": "~2.4.5"
+  },
+  "keywords": [
+    "dal",
+    "data",
+    "access",
+    "couchbase",
+    "configuration"
+  ],
+  "main": "./lib",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dsfields/sofaking"
+  },
+  "scripts": {
+    "lint": "eslint ./**/*.js",
+    "test": "NODE_ENV=test istanbul cover _mocha tests/unit/**/*.js"
+  }
+}

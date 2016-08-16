@@ -1,0 +1,11 @@
+.eslintrc
+.git
+.gitignore
+.idea
+.npmrc
+.travis.yml
+coverage
+node_modules
+NOTES.md
+npm-debug.log
+tests
