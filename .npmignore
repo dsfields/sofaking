@@ -9,3 +9,5 @@ node_modules
 NOTES.md
 npm-debug.log
 tests
+CHANGELOG.md
+CONTRIBUTING.md
