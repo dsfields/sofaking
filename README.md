@@ -1,10 +1,12 @@
 # Sofaking
 
+Bucket configuration and connection management for Couchbase.
+
 Manages the lifetime and configuration of [`couchbase`](https://www.npmjs.com/package/couchbase) bucket instances.  All buckets are wrapped using [`couchbase-promises`](https://www.npmjs.com/package/couchbase-promises) to provide full A+ promises support.
 
 ## Configuration
 
-Configuration of `sofaking` is done using [`rc`](https://www.npmjs.com/package/rc).  Available configuration options include:
+The `sofaking` module internally uses [`kibbutz`](https://www.npmjs.com/package/kibbutz) for configuration loading and aggregation.  Configuration providers must return objects with the following schema:
 
 * `clusters`: _(required)_ an object that contains a listing of Couchbase clusters, and their configuration.  Each key in the `clusters` object corresponds to a single cluster configuration, and is an object that can contain the following keys:
 
@@ -26,19 +28,19 @@ Configuration of `sofaking` is done using [`rc`](https://www.npmjs.com/package/r
 
 ## Example
 
-Add a reference in your `package.json` file's `dependencies` key:
+The following example uses [`kibbutz-rc`](https://www.npmjs.com/package/kibbutz-rc) to load configuration using [`rc`](https://www.npmjs.com/package/rc)
 
-```json
-  "sofaking": "^1.0.0"
+```sh
+$ npm install sofaking -S
 ```
 
-Create a `.sofakingerc` file:
+Create a `.usersrc` file:
 
 ```json
 {
   "clusters": {
     "primary": {
-      "cnstr": "couchbase://10.0.5.175",
+      "cnstr": "couchbase://127.0.0.1",
       "options": { },
       "buckets": {
         "default": {
@@ -60,13 +62,22 @@ Create a `users-repository.js` file:
 
 ```js
 const Sofaking = require('sofaking');
+const RcProvider = require('kibbutz-rc');
+
+const provider = new RcProvider({
+  appName: 'users'
+});
+
+const sofa = new Sofaking();
+sofa.load([provider]);
+
 const me = new WeakMap();
 
 class UsersRepository {
   constructor(bucket) {
     // support DI
     me.set(this, {
-      bucket: bucket || Sofaking.getBucket('users')
+      bucket: bucket || sofa.getBucket('users')
     });
   }
 
@@ -92,11 +103,15 @@ A _repository_ is an abstract that represents all of the persistence logic for a
 
 ### API
 
-#### `Sofaking.getBucket(repository)`
+#### Constructors
 
-Returns the Couchbase bucket mapped to the given repository name.
+##### `new Sofaking(couchbase)`
 
-#### `Sofaking.errors`
+Creates a new instance of `Sofaking`.  The constructor takes a single, optional argument that allows you to specify what `couchbase` module to use internally.  This is especially useful in unit tests when you want to use mocks.
+
+#### Properties
+
+##### `Sofaking.errors`
 
 A dictionary of custom errors thrown by `sofaking`.  Errors include:
 
@@ -105,3 +120,67 @@ A dictionary of custom errors thrown by `sofaking`.  Errors include:
   * `InvalidClusterMappingError`: thrown when a _repository_ is configured to reference an unknown Couchbase cluster.
 
   * `InvalidBucketMappingError`: thrown a _repository_ is configured to reference an unknown Couchbase bucket.
+
+##### `Sofaking.shared`
+
+Instances of `Sofaking` do not share Couchbase cluster and bucket instances.  If you have a need to share instances across multiple modules, set the `shared` property to an instance of `Sofaking`.  This static property is, by default, set to `null`.
+
+##### `Sofaking.prototype.clusters`
+
+A `Map` of configured clusters.  Values for entries are objects with the following keys:
+
+  * `name`: the name of the cluster as it is in configuration.  This will be the same value as the `key` for the entry.
+
+  * `cluster`: the Couchbase `Cluster` instance.
+
+  * `buckets`: a `Map` of open buckets.  Entries correspond to configuration.  Values for entries are objects with the following keys:
+
+    + `name`: the name of the bucket.  This will be the same value as the `key` for the entry, as well as the name of the bucket in the Couchbase cluster.
+
+    + `bucket`: the open Couchbase `Bucket` instance.
+
+##### `Sofaking.prototype.repositories`
+
+A `Map` of configured repositories.  Values are instances of their mapped Couchbase `Bucket` instance.
+
+#### Methods
+
+##### `Sofaking.prototype.getBucket(repository)`
+
+Returns the Couchbase bucket mapped to the given repository name.
+
+##### `Sofaking.prototype.getBucketName(repository)`
+
+Returns the name of the bucket mapped to the given repository name.
+
+##### `Sofaking.prototype.load(providers [, value] [, callback])`
+
+Used to load configuration.  The `load()` method returns the same isntance of `Sofaking` so that calls can be chained together.  Parameters:
+
+  * `providers`: _(required)_ an array of `Kibbutz`-styled configuration providers.
+
+  * `value`: _(optional)_ the base configuration object to pass to the `Kibbutz` constructor.
+
+  * `callback`: _(optional)_ a Node.js callback function that is called when all configuration fragments have been loaded, aggregated, and subsequently mapped to Couchbase `Bucket` instances.
+
+##### `Sofaking.prototype.on(eventName, listener)`
+
+Instances of `Sofaking` are also `EventEmitter`s.  The `on()` method maps listeners to specific events.  The `on()` method returns the same isntance of `Sofaking` so that calls can be chained together.  Parameters:
+
+  * `eventName`: _(required)_ a string that maps the `lister` to its target event.
+
+  * `listener`: _(required)_ a function used to handle events.  The signature for the function depends on the event.
+
+Valid events include:
+
+  * `config`: raised when the internal `Kibbutz` instance loads configuration fragments.  This event is exactly the same as `Kibbutz`'s' `config` event.
+
+  * `done`: raised when the internal `Kibbutz` instance completes loading all configuration fragments from all providers given to the `load()` method.  This event is exactly the same as `Kibbutz`'s' `done` event.
+
+  * `bucket`: raised when Couchbase `Bucket` instances are opened.  Listeners should take a single parameter.  Passed arguments are objects with following keys:
+
+    + `name`: the name of the bucket.
+
+    + `bucket`: the Couchbase `Bucket` instance.
+
+  * `error`: raised when an internal error is encountered.  Listeners should take a single parameter, which is the error that was thrown internally.

@@ -1,12 +1,11 @@
 {
   "name": "sofaking",
   "longName": "Bucket configuration and connection management for Couchbase.",
-  "version": "1.0.1",
-
+  "version": "2.0.0",
   "dependencies": {
     "couchbase-promises": "^2.1.1",
-    "joi": "~8.0.5",
-    "rc": "~1.1.6"
+    "elv": "^1.0.0",
+    "kibbutz": "^1.0.4"
   },
   "devDependencies": {
     "chai": "~3.5.0",
@@ -18,9 +17,11 @@
     "data",
     "access",
     "couchbase",
-    "configuration"
+    "configuration",
+    "rc",
+    "consul"
   ],
-  "main": "./lib",
+  "main": "./lib/sofaking",
   "private": false,
   "repository": {
     "type": "git",
