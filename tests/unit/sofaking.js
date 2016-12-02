@@ -1592,4 +1592,68 @@ describe('Sofaking', () => {
     });
   });
 
+  describe('#add', () => {
+    const testClusters = {
+      clusters: {
+        baz: {
+          cnstr: 'couchbase//localhost',
+          buckets: {
+            qux: {}
+          }
+        }
+      }
+    };
+
+    const testRepos = {
+      repositories: {
+        quux: {
+          cluster: 'baz',
+          bucket: 'qux'
+        }
+      }
+    };
+
+    it ('should throw if no arguments provided', () => {
+      assert.throws(() => {
+        sofaking.add();
+      }, TypeError);
+    });
+
+    it ('should merge fragments from array', (done) => {
+      sofaking.add([testClusters, testRepos]);
+      assert.isTrue(sofaking.clusters.has('baz'));
+      assert.isTrue(sofaking.repositories.has('quux'));
+      done();
+    });
+
+    it ('should merge fragments from multiple arguments', (done) => {
+      sofaking.add(testClusters, testRepos);
+      assert.isTrue(sofaking.clusters.has('baz'));
+      assert.isTrue(sofaking.repositories.has('quux'));
+      done();
+    });
+
+    it ('should concat array of fragments from multiple arguments', (done) => {
+      sofaking.add(testClusters, [
+        {
+          repositories: {
+            quux: {
+              cluster: 'baz'
+            }
+          }
+        },
+        {
+          repositories: {
+            quux: {
+              bucket: 'qux'
+            }
+          }
+        }
+      ]);
+      assert.isTrue(sofaking.clusters.has('baz'));
+      assert.isTrue(sofaking.repositories.has('quux'));
+      done();
+    });
+  });
+
 });

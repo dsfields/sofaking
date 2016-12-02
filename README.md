@@ -145,6 +145,18 @@ A `Map` of configured repositories.  Values are instances of their mapped Couchb
 
 #### Methods
 
+##### `Sofaking.prototype.add(fragments | ...fragments)`
+
+Adds Couchbase cluster, bucket, and repository mappings from configuration fragments.  The `add()` method returns the same instance of `Sofaking` so that calls can be chained together.  Parameters:
+
+  * `fragments`: _(required)_ an array of configuration fragments.  All fragments are merged, and new cluster, bucket, and repository mappings are opened and added as necessary.
+
+  _...or..._
+
+  * `...fragments`: _(required)_ n-number of configuration fragments provided as separate arguments.  All fragments are merged, and new cluster, bucket, and repository mappings are opened and added as necessary.
+
+The merging of configuration fragments uses the same `Kibbutz`-style merge logic as the `load()` method.
+
 ##### `Sofaking.prototype.getBucket(repository)`
 
 Returns the Couchbase bucket mapped to the given repository name.
@@ -155,7 +167,7 @@ Returns the name of the bucket mapped to the given repository name.
 
 ##### `Sofaking.prototype.load(providers [, value] [, callback])`
 
-Used to load configuration.  The `load()` method returns the same isntance of `Sofaking` so that calls can be chained together.  Parameters:
+Used to load configuration.  The `load()` method returns the same instance of `Sofaking` so that calls can be chained together.  Parameters:
 
   * `providers`: _(required)_ an array of `Kibbutz`-styled configuration providers.
 

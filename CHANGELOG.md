@@ -2,6 +2,13 @@
 
 ## 2.0
 
+### 2.1.0
+
+  * Added the `add()` method.
+  * Updating `Kibbutz` to 1.1.0.
+
+### 2.0.0
+
   * Moved the static `getBucket()` and `getBucketName()` methods to the `prototype` chain.
   * Completely changed the `constructor`.
   * Added the `load()` method for loading configuration using `Kibbutz`.
