@@ -1,5 +1,11 @@
 # Change Log
 
+## 3.0
+
+### 3.0.0
+
+  * Updating `couchbase-promises` to 3.0.0.
+
 ## 2.0
 
 ### 2.1.0
