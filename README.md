@@ -121,6 +121,8 @@ A dictionary of custom errors thrown by `sofaking`.  Errors include:
 
   * `InvalidBucketMappingError`: thrown a _repository_ is configured to reference an unknown Couchbase bucket.
 
+  * `codes`: an object containing all of the Couchbase error codes.  This is the same object as the `couchbase-promises`' `error` property.
+
 ##### `Sofaking.shared`
 
 Instances of `Sofaking` do not share Couchbase cluster and bucket instances.  If you have a need to share instances across multiple modules, set the `shared` property to an instance of `Sofaking`.  This static property is, by default, set to `null`.

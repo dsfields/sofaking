@@ -1,7 +1,7 @@
 {
   "name": "sofaking",
   "longName": "Bucket configuration and connection management for Couchbase.",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "dependencies": {
     "couchbase-promises": "^3.0.0",
     "elv": "^1.0.0",

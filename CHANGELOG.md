@@ -2,6 +2,10 @@
 
 ## 3.0
 
+### 3.1.0
+
+  * Adding `Sofaking.errors.codes`, which contains all native Couchbase error codes.
+
 ### 3.0.0
 
   * Updating `couchbase-promises` to 3.0.0.
