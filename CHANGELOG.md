@@ -2,6 +2,10 @@
 
 ## 4.0
 
+### 4.2.0
+
+  * Updating `couchbase-promises` to 4.2.0.
+  
 ### 4.1.0
 
   * Updating `couchbase-promises` to 4.1.0.
